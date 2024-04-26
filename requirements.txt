@@ -1,0 +1,4 @@
+pillow
+pygame
+requests
+beautifulsoup4
