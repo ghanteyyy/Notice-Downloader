@@ -45,16 +45,12 @@ class Notices:
         all_divs = soup.find_all('div', attrs={'class': 'recent-post-wrapper'})
 
         for div in all_divs:
-            date = div.find('h4').text
-            curr_date = time.strftime('%Y-%m-%d')
-
             notice = div.find('div', attrs={'class', 'detail'})
 
             result_link = notice.find('a')['href']
             result_page_content = self.session.get(result_link).content
 
             notice = notice.find('h5').text
-            lower_notice = notice.lower()
 
             result_page_soup = BeautifulSoup(result_page_content, "html.parser")
             pdf_page_link = result_page_soup.find('td', {'class': 'text-center'})
@@ -64,7 +60,9 @@ class Notices:
             self.pdf_name = self.pdf_link.split('/')[-1]
             pdf_name = self.pdf_link.split('/')[-1]
 
-            if curr_date != date and 'result' in lower_notice and 'bca' in lower_notice:
+            is_it_valid_notice = all(map(lambda _notice: _notice in notice.lower(), ('bca', 'result')))
+
+            if is_it_valid_notice:
                 notices.append(
                     {
                         'notice_name': pdf_name,
