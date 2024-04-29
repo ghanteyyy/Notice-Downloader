@@ -69,14 +69,14 @@ class BCA_Result_Downloader:
         pdf_name = os.path.basename(download_link)
         pdf_path = os.path.join(self.Notices.downloads_path, pdf_name)
 
-        with open(pdf_path, 'wb') as f:
+        with open(pdf_path, 'wb') as f:  # Saving pdf to the download path
             content = self.Notices.session.get(download_link, stream=True)
             contents = content.content
             f.write(contents)
 
-        buttons_frame = event.widget.master
+        buttons_frame = event.widget.master  # Getting frame where buttons reside
 
-        for widget in buttons_frame.winfo_children():
+        for widget in buttons_frame.winfo_children():  # Removing all widgets from buttons_frame
             widget.destroy()
 
         img = self.resize_image(self.show_in_directory_image)
@@ -161,6 +161,12 @@ class BCA_Result_Downloader:
         self.window.after(60000, self.update_notices)
 
     def place_buttons(self, is_notice_downloaded, buttons_frame, notice_name, image, binding_function):
+        '''
+        Place the 'open_in_folder' and 'open_in_browser' buttons after
+        the user downloads the PDF, or only place download buttons when
+        the PDF has not been downloaded
+        '''
+
         side = RIGHT
 
         if is_notice_downloaded:
