@@ -1,5 +1,4 @@
 import os
-import time
 from urllib3.exceptions import InsecureRequestWarning
 import requests
 from bs4 import BeautifulSoup
