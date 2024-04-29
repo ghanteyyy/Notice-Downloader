@@ -45,6 +45,18 @@ class BCA_Result_Downloader:
 
         subprocess.run([FILE_BROWSER_PATH, '/select,', pdf_location])
 
+    def show_in_browser(self, event, pdf_path):
+        """
+        Open the downloaded pdf in default browser.
+
+        Args:
+            - event: The event triggering the reveal action.
+            - pdf_path (str): The path of the pdf to be opened in the browser
+        """
+
+        full_pdf_path = os.path.join(self.Notices.downloads_path, pdf_path)
+        os.startfile(full_pdf_path)
+
     def download_pdf(self, event, download_link):
         """
         Downloads the PDF file from the specified link and updates the GUI accordingly
@@ -62,15 +74,15 @@ class BCA_Result_Downloader:
             contents = content.content
             f.write(contents)
 
-        pdf_basename = os.path.basename(download_link)
+        buttons_frame = event.widget.master
+
+        for widget in buttons_frame.winfo_children():
+            widget.destroy()
+
         img = self.resize_image(self.show_in_directory_image)
+        binding_function = lambda event=Event, location=pdf_name: self.show_in_folder(event, location)
 
-        binding_function = lambda event=Event, location=pdf_basename: self.show_in_folder(event, location)
-        event.widget.unbind('<Button-1>')
-        event.widget.bind('<Button-1>', binding_function)
-
-        event.widget.config(image=img)
-        event.widget.image = img
+        self.place_buttons(True, buttons_frame, pdf_name, img, binding_function)
 
     def center_window(self):
         '''
@@ -115,8 +127,9 @@ class BCA_Result_Downloader:
 
             for index, notice in enumerate(retrieved_notices):
                 notice_name = notice['notice_name']
+                is_notice_downloaded = notice['is_pdf_downloaded']
 
-                if notice['is_pdf_downloaded']:
+                if is_notice_downloaded:
                     image = self.show_in_directory_image
                     binding_function = lambda event=Event, location=notice_name: self.show_in_folder(event, location)
 
@@ -127,17 +140,16 @@ class BCA_Result_Downloader:
 
                 image = self.resize_image(image)
 
-                inner_frame = Frame(notices_frame, background='white')
-                inner_frame.pack(pady=(5 if index > 0 else 0, 0))
+                inner_frame = Frame(notices_frame, background='#43766C')
+                inner_frame.pack(pady=(5 if index > 0 else 0, 0), fill='x')
 
-                self.notice_label = Label(inner_frame, text=notice_name, font=Font(family='Calibri', size=15), wraplength=500, justify=CENTER, height=3, background='#43766C', foreground='whitesmoke')
-                self.notice_label.pack(side=LEFT, ipadx=5, fill=BOTH)
+                self.notice_label = Label(inner_frame, text=notice_name, font=Font(family='Calibri', size=15), justify=CENTER, height=3, background='#43766C', foreground='whitesmoke')
+                self.notice_label.pack(side=LEFT, ipadx=5, fill='x')
 
-                self.download_button = Label(inner_frame, image=image, relief=FLAT, cursor='hand2', background='white')
-                self.download_button.pack(side=RIGHT, fill=Y, ipadx=10)
-                self.download_button.image = image
+                buttons_frame = Frame(inner_frame, background='white')
+                buttons_frame.pack(side=RIGHT, fill=BOTH, ipadx=10)
 
-                self.download_button.bind('<Button-1>', binding_function)
+                self.place_buttons(is_notice_downloaded, buttons_frame, notice_name, image, binding_function)
 
             if play_audio or self.Audio.is_audio_paused is False:
                 self.Audio.play_audio()
@@ -147,6 +159,26 @@ class BCA_Result_Downloader:
             self.when_any_error()
 
         self.window.after(60000, self.update_notices)
+
+    def place_buttons(self, is_notice_downloaded, buttons_frame, notice_name, image, binding_function):
+        side = RIGHT
+
+        if is_notice_downloaded:
+            open_in_browser_image = self.resize_image(self.open_in_browser_image)
+
+            open_in_browser_button = Label(buttons_frame, image=open_in_browser_image, relief=FLAT, cursor='hand2', background='white')
+            open_in_browser_button.pack(side=TOP)
+            open_in_browser_button.image = open_in_browser_image
+
+            open_in_browser_button.bind('<Button-1>', lambda event=Event, pdf_path=notice_name: self.show_in_browser(event, pdf_path))
+
+            side = BOTTOM
+
+        download_button = Label(buttons_frame, image=image, relief=FLAT, cursor='hand2', background='white')
+        download_button.pack(side=side)
+        download_button.image = image
+
+        download_button.bind('<Button-1>', binding_function)
 
     def when_any_error(self):
         '''
@@ -199,6 +231,7 @@ class BCA_Result_Downloader:
         self.error_text = StringVar()
 
         self.download_image = Image.open(utils.resource_path('download_pdf.png'))
+        self.open_in_browser_image = Image.open(utils.resource_path('open_in_browser.png'))
         self.show_in_directory_image = Image.open(utils.resource_path('show_in_directory.png'))
 
         self.frame = Frame(self.window, background='white')
