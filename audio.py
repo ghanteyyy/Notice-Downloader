@@ -14,7 +14,7 @@ class Audio:
         Play audio if any notice gets retrieved
         '''
 
-        self.play_audio = False
+        self.is_audio_paused = False
         pygame.mixer.music.play(loops=-1)
 
     def pause_unpause_audio(self, event):
