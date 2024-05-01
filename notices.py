@@ -2,6 +2,8 @@ import os
 from urllib3.exceptions import InsecureRequestWarning
 import requests
 from bs4 import BeautifulSoup
+from writer import JSON
+
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -60,8 +62,9 @@ class Notices:
             pdf_name = self.pdf_link.split('/')[-1]
 
             is_it_valid_notice = all(map(lambda _notice: _notice in notice.lower(), ('bca', 'result')))
+            is_notice_deleted_by_user_previously = JSON().does_exists(pdf_name)
 
-            if is_it_valid_notice:
+            if is_it_valid_notice and is_notice_deleted_by_user_previously is False:
                 notices.append(
                     {
                         'notice_name': pdf_name,
