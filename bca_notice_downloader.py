@@ -11,7 +11,7 @@ from error import Error
 import utils
 
 
-class BCA_Result_Downloader:
+class BCA_Notice_Downloader:
     def __init__(self):
         self.JSON = JSON()
         self.Audio = Audio()
@@ -143,7 +143,7 @@ class BCA_Result_Downloader:
             self.Error.show_error()
 
         elif not self.all_notices:
-            self.Error.error_text_var.set('No results have been published as of yet !!!')
+            self.Error.error_text_var.set('No notices have been published as of yet !!!')
             self.Error.show_error()
 
         else:
@@ -168,8 +168,8 @@ class BCA_Result_Downloader:
                     image = self.download_image
                     binding_function = lambda event=Event, pdf_link=notice['download_link']: self.download_pdf(event, pdf_link)
 
-                notice_label = Label(inner_frame, text=notice_name, font=Font(family='Calibri', size=15), justify=CENTER, height=3, background='#43766C', foreground='whitesmoke')
-                notice_label.pack(side=LEFT, ipadx=5, fill='x')
+                notice_label = Label(inner_frame, text=notice_name.split('.')[0], font=Font(family='Calibri', size=15), height=3, background='#43766C', foreground='whitesmoke')
+                notice_label.pack(side=LEFT, ipadx=5, fill='x', expand=True)
 
                 buttons_frame = Frame(inner_frame, background='white')
                 buttons_frame.pack(side=RIGHT, fill=BOTH, ipadx=10)
@@ -229,7 +229,7 @@ class BCA_Result_Downloader:
         self.window.withdraw()
 
         self.window.config(background='white')
-        self.window.title('BCA Results')
+        self.window.title('BCA Notices')
 
         self.Error = Error(self.window, self.Audio)
 
@@ -247,5 +247,5 @@ class BCA_Result_Downloader:
 
 
 if __name__ == '__main__':
-    win = BCA_Result_Downloader()
+    win = BCA_Notice_Downloader()
     win.main()

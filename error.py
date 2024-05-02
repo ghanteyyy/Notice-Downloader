@@ -14,7 +14,7 @@ class Error:
         '''
         Display error messages under the following conditions:
             1. No internet connection detected
-            2. No results published
+            2. No notice published
         '''
 
         if self.is_error_message_shown is False:

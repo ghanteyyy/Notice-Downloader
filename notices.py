@@ -13,7 +13,6 @@ class Notices:
         self.session = requests.Session()
         self.session.verify = False
 
-        self.is_result_downloaded = False
         self.url = 'https://fohss.tu.edu.np/notices'
         self.downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
 
@@ -32,7 +31,7 @@ class Notices:
 
     def get_notices(self):
         """
-        Get notices related to BCA results.
+        Get notices related to BCA.
 
         Returns:
             - list: A list of dictionaries containing information about the notices.
@@ -48,20 +47,20 @@ class Notices:
         for div in all_divs:
             notice = div.find('div', attrs={'class', 'detail'})
 
-            result_link = notice.find('a')['href']
-            result_page_content = self.session.get(result_link).content
+            notice_link = notice.find('a')['href']
+            notice_page_content = self.session.get(notice_link).content
 
             notice = notice.find('h5').text
 
-            result_page_soup = BeautifulSoup(result_page_content, "html.parser")
-            pdf_page_link = result_page_soup.find('td', {'class': 'text-center'})
+            notice_page_soup = BeautifulSoup(notice_page_content, "html.parser")
+            pdf_page_link = notice_page_soup.find('td', {'class': 'text-center'})
             pdf_link = pdf_page_link.find('a')['href']
             self.pdf_link = pdf_page_link.find('a')['href']
 
             self.pdf_name = self.pdf_link.split('/')[-1]
             pdf_name = self.pdf_link.split('/')[-1]
 
-            is_it_valid_notice = all(map(lambda _notice: _notice in notice.lower(), ('bca', 'result')))
+            is_it_valid_notice = all(map(lambda _notice: _notice in notice.lower(), ('bca',)))
             is_notice_deleted_by_user_previously = JSON().does_exists(pdf_name)
 
             if is_it_valid_notice and is_notice_deleted_by_user_previously is False:
