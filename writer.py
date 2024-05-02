@@ -8,7 +8,7 @@ class JSON:
 
     def does_exists(self, key):
         '''
-        Check if the give value exists in the JSON file
+        Check if the given value exists in the JSON file
         '''
 
         return key in self.read_json()
