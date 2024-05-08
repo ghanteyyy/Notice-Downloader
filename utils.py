@@ -12,7 +12,7 @@ def is_internet():
         """
 
         try:
-            requests.get('http://google.com')
+            requests.get('http://google.com', timeout=3)
             return True
 
         except requests.ConnectionError:
