@@ -3,6 +3,7 @@ import subprocess
 from tkinter import *
 from tkinter.font import Font
 from tkinter import messagebox
+from tkinter.ttk import Separator
 from PIL import Image, ImageTk
 from notices import Notices
 from audio import Audio
@@ -168,8 +169,14 @@ class BCA_Notice_Downloader:
                     image = self.download_image
                     binding_function = lambda event=Event, pdf_link=notice['download_link']: self.download_pdf(event, pdf_link)
 
+                date_label = Label(inner_frame, text=notice['date'], font=Font(family='Calibri', size=15), height=3, background='#43766C', foreground='whitesmoke')
+                date_label.pack(side=LEFT, ipadx=10, fill='x', expand=True)
+
+                date_separator = Separator(inner_frame, orient=VERTICAL)
+                date_separator.pack(side=LEFT, fill='y')
+
                 notice_label = Label(inner_frame, text=notice_name.split('.')[0], font=Font(family='Calibri', size=15), height=3, background='#43766C', foreground='whitesmoke')
-                notice_label.pack(side=LEFT, ipadx=5, fill='x', expand=True)
+                notice_label.pack(side=LEFT, ipadx=10, fill='x', expand=True)
 
                 buttons_frame = Frame(inner_frame, background='white')
                 buttons_frame.pack(side=RIGHT, fill=BOTH, ipadx=10)
