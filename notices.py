@@ -54,22 +54,27 @@ class Notices:
 
             notice_page_soup = BeautifulSoup(notice_page_content, "html.parser")
             pdf_page_link = notice_page_soup.find('td', {'class': 'text-center'})
-            pdf_link = pdf_page_link.find('a')['href']
-            self.pdf_link = pdf_page_link.find('a')['href']
 
-            self.pdf_name = self.pdf_link.split('/')[-1]
-            pdf_name = self.pdf_link.split('/')[-1]
+            if pdf_page_link:
+                pdf_link = pdf_page_link.find('a')['href']
+                self.pdf_link = pdf_page_link.find('a')['href']
 
-            is_it_valid_notice = all(map(lambda _notice: _notice in notice.lower(), ('bca',)))
-            is_notice_deleted_by_user_previously = JSON().does_exists(pdf_name)
+                self.pdf_name = self.pdf_link.split('/')[-1]
+                pdf_name = self.pdf_link.split('/')[-1]
 
-            if is_it_valid_notice and is_notice_deleted_by_user_previously is False:
-                notices.append(
-                    {
-                        'notice_name': pdf_name,
-                        'download_link': pdf_link,
-                        'is_pdf_downloaded': self.is_pdf_downloaded(pdf_name)
-                    }
-                )
+                is_it_valid_notice = all(map(lambda _notice: _notice in notice.lower(), ('bca',)))
+                is_notice_deleted_by_user_previously = JSON().does_exists(pdf_name)
+
+                if is_it_valid_notice and is_notice_deleted_by_user_previously is False:
+                    date = div.find('span', {'id': 'nep_month'}).text
+
+                    notices.append(
+                        {
+                            'date': date,
+                            'notice_name': pdf_name,
+                            'download_link': pdf_link,
+                            'is_pdf_downloaded': self.is_pdf_downloaded(pdf_name)
+                        }
+                    )
 
         return notices
