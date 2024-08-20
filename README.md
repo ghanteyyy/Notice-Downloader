@@ -9,7 +9,7 @@ If you are new to the project, here are some initial steps to get started:
 **1. Clone the project**
 
 ```
-git clone https://github.com/ghanteyyy/BCA-Notice-Downloader.git
+git clone https://github.com/ghanteyyy/Notice-Downloader.git
 ```
 
 **2. Install Dependencies**
