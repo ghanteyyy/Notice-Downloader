@@ -4,22 +4,19 @@ import requests
 
 
 def is_internet():
-        """
-        Check if there is an active internet connection.
+    '''
+    Check if user is connected to internet
+    '''
 
-        Returns:
-        - bool: True if there is an active internet connection, False otherwise.
-        """
+    try:
+        requests.get('http://google.com')
+        return True
 
-        try:
-            requests.get('http://google.com', timeout=3)
-            return True
-
-        except requests.ConnectionError:
-            return False
+    except requests.ConnectionError:
+        return False
 
 
-def resource_path(file_name):
+def resource_path(file_name, inner_directory):
     '''
     Get absolute path to resource from temporary directory
 
@@ -37,5 +34,6 @@ def resource_path(file_name):
 
     except AttributeError:
         base_path = os.getcwd()
+        base_path = os.path.split(base_path)[0]
 
-    return os.path.join(base_path, 'assets', file_name)
+    return os.path.join(base_path, 'assets', inner_directory, file_name)

@@ -1,17 +1,27 @@
+import os
 import json
-import utils
+from Functions import utils
 
 
 class JSON:
     def __init__(self):
-        self.json_path = utils.resource_path('db.json')
+        self.json_path = utils.resource_path('downloaded_notices.json', 'JSON')
+        self.notice_downloaded_path = os.path.join(os.environ['USERPROFILE'], 'Notice Downloader')
 
-    def does_exists(self, key):
+    def does_exists(self, pdf_name):
         '''
         Check if the given value exists in the JSON file
         '''
 
-        return key in self.read_json()
+        return pdf_name in self.read_json()
+
+    def clear_json(self, event=None):
+        '''
+        Empties json file
+        '''
+
+        with open(self.json_path, 'w'):
+            pass
 
     def read_json(self):
         '''
