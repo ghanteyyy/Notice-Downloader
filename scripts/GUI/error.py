@@ -3,9 +3,10 @@ from tkinter.font import Font
 
 
 class Error:
-    def __init__(self, root, error_title, animate_prefix):
+    def __init__(self, root, previous_frame, error_title, animate_prefix):
         self.root = root
         self.error_title = error_title
+        self.previous_frame = previous_frame
         self.animate_prefix = animate_prefix
 
         self.dot_counter = 0
@@ -17,7 +18,7 @@ class Error:
         Display error messages
         '''
 
-        self.error_frame = Frame(self.root)
+        self.error_frame = Frame(self.previous_frame)
         self.error_frame.pack(padx=10, pady=10, fill='x')
 
         self.error_title_label = Label(self.error_frame, text=self.error_title, font=Font(size=20, weight='bold'), **self.label_attributes)
