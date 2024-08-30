@@ -100,26 +100,26 @@ class Notices:
                 notice = notice.find('h5').text
 
                 notice_page_soup = BeautifulSoup(notice_page_content, "html.parser")
-                pdf_page_link = notice_page_soup.find('td', {'class': 'text-center'})
+                pdf_tables = notice_page_soup.find('div', attrs={'class', 'download-wrapper'}).find('table').find('tbody')
 
-                if pdf_page_link:
-                    pdf_link = pdf_page_link.find('a')['href']
-                    self.pdf_link = pdf_page_link.find('a')['href']
+                if pdf_tables:
+                    for table in pdf_tables.find_all('tr'):
+                        all_pdf_links = table.find_all('a')
 
-                    self.pdf_name = self.pdf_link.split('/')[-1]
-                    pdf_name = self.pdf_link.split('/')[-1]
+                        for pdf_link in all_pdf_links:
+                            date = div.find('span', {'id': 'nep_month'}).text
+                            pdf_download_link = pdf_link['href']
+                            pdf_name = pdf_download_link.split('/')[-1]
 
-                    date = div.find('span', {'id': 'nep_month'}).text
-
-                    if self.json.does_exists(pdf_name) is False:
-                        notices.append(
-                            {
-                                'date': date,
-                                'notice_name': pdf_name,
-                                'download_link': pdf_link,
-                                'is_notice_downloaded': self.is_notice_downloaded(pdf_name)
-                            }
-                        )
+                            if self.json.does_exists(pdf_name) is False:
+                                notices.append(
+                                    {
+                                        'date': date,
+                                        'notice_name': pdf_name,
+                                        'download_link': pdf_download_link,
+                                        'is_notice_downloaded': self.is_notice_downloaded(pdf_name)
+                                    }
+                                )
 
             self.data = notices
             time.sleep(60)
