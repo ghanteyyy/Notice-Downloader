@@ -91,6 +91,8 @@ class BCA_Notice_Downloader:
             widget.destroy()
 
         for notice in self.Notices.data:
+            notice_name = notice['notice_name']
+
             notice_frame = Frame(self.root_frame.scrollable_frame, background='#43766C')
             notice_frame.pack(padx=5, pady=(8, 0), ipady=15, fill='both')
 
@@ -100,7 +102,7 @@ class BCA_Notice_Downloader:
             date_separator = ttk.Separator(notice_frame, orient=VERTICAL)
             date_separator.pack(side=LEFT, fill='y')
 
-            notice_label = Label(notice_frame, text=notice['notice_name'].strip('.pdf'), justify='left', wraplength=500, anchor='w', **label_attributes)
+            notice_label = Label(notice_frame, text=notice_name, justify='left', wraplength=500, anchor='w', **label_attributes)
             notice_label.pack(side=LEFT, padx=5, ipadx=10, expand=True, fill='x')
 
             buttons_frame = Frame(notice_frame, background='#e6e6e6', highlightbackground="#cfcfcf", highlightthickness=3)
@@ -119,17 +121,17 @@ class BCA_Notice_Downloader:
                 True: {
                     'open_in_browser': {
                         'image': images.Images().open_in_browser_image,
-                        'command': lambda event=Event, pdf_name=notice['notice_name']: self.Notices.show_notice_in_browser(event, pdf_name)
+                        'command': lambda event=Event, pdf_name=notice_name: self.Notices.show_notice_in_browser(event, pdf_name)
                     },
 
                     'open_in_explorer': {
                         'image': images.Images().show_in_directory_image,
-                        'command': lambda event=Event, pdf_name=notice['notice_name']: self.Notices.show_notice_location_in_explorer(event, pdf_name)
+                        'command': lambda event=Event, pdf_name=notice_name: self.Notices.show_notice_location_in_explorer(event, pdf_name)
                     },
 
                     'delete': {
                         'image': images.Images().delete_image,
-                        'command': lambda event=Event, notice_frame=notice_frame, pdf_name=notice['notice_name']: self.delete_notice(event, notice_frame, pdf_name)
+                        'command': lambda event=Event, notice_frame=notice_frame, pdf_name=notice_name: self.delete_notice(event, notice_frame, pdf_name)
                     }
                 },
                 False: {
@@ -143,7 +145,7 @@ class BCA_Notice_Downloader:
             # Attach the download command to the "Download" button if the notice has not been downloaded.
             # This command is added here instead of earlier because the 'buttons_list' needs to be fully populated
             # before being passed to the attach_buttons method, which is responsible for packing the necessary buttons.
-            buttons_lists[False]['download']['command'] = lambda event=Event, pdf_link=notice['download_link'], button_frame=buttons_frame, buttons=buttons_lists[True]: self.download_notice(event, pdf_link, button_frame, buttons)
+            buttons_lists[False]['download']['command'] = lambda event=Event, pdf_link=notice['download_link'], pdf_name=notice_name, button_frame=buttons_frame, buttons=buttons_lists[True]: self.download_notice(event, pdf_link, pdf_name, button_frame, buttons)
             buttons = buttons_lists[notice['is_notice_downloaded']]
 
             self.attach_buttons(buttons_frame, buttons)
@@ -160,7 +162,7 @@ class BCA_Notice_Downloader:
 
             button.bind('<Button-1>', img['command'])
 
-    def download_notice(self, event, pdf_link, buttons_frame, buttons):
+    def download_notice(self, event, pdf_link, pdf_name, buttons_frame, buttons):
         """
         Handles the download process triggered by the user's click,
         retrieves the PDF from pdf_link, saves it, and replaces the
@@ -168,13 +170,12 @@ class BCA_Notice_Downloader:
         view it in Explorer, or delete it.
         """
 
-
         for child in buttons_frame.winfo_children():
             child.destroy()
 
         self.attach_buttons(buttons_frame, buttons)
 
-        self.Notices.download_notice(event, pdf_link)
+        self.Notices.download_notice(event, pdf_link, pdf_name)
 
     def delete_notice(self, event, notice_frame, pdf_name):
         """
@@ -182,6 +183,7 @@ class BCA_Notice_Downloader:
         This ensures that the PDF will not be re-added when fetching notices in the future.
         """
 
+        pdf_name += '.pdf'
         self.JSON_Writer.write_json(pdf_name)
 
         notice_frame.destroy()
