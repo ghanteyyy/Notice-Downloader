@@ -22,6 +22,9 @@ class Notices:
 
         self.url = 'https://fohss.tu.edu.np/notices'
 
+        if os.path.exists(self.notice_download_path) is False:
+            os.makedirs(self.notice_download_path)
+
     def is_notice_downloaded(self, pdf_name):
         """
         Check if a PDF file is already downloaded.
@@ -33,9 +36,6 @@ class Notices:
         """
         Downloads the PDF file from the specified link and updates the GUI accordingly
         """
-
-        if os.path.exists(self.notice_download_path) is False:
-            os.makedirs(self.notice_download_path)
 
         pdf_path = os.path.join(self.notice_download_path, pdf_name + '.pdf')
 
